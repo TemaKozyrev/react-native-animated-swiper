@@ -12,6 +12,13 @@
     "react-native-component",
     "react-native-swiper",
     "react-native-animated-swiper"
-  ]
+  ],
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "dependencies": {
+    "react": "^15.6.1",
+    "react-native": "^0.46.4",
+  }
 }
-

@@ -83,7 +83,7 @@ export default class AnimatedSwiper extends Component {
 }
 
 AnimatedSwiper.propTypes = {
-  children: PropTypes.array.isRequired,
+  children: PropTypes.array,
   dragOffsetForTransparency: PropTypes.number,
   containerStyle: PropTypes.object,
   swipebleWidth: PropTypes.number,
@@ -94,6 +94,7 @@ AnimatedSwiper.propTypes = {
 }
 
 AnimatedSwiper.defaultProps = {
+  children: [],
   dragOffsetForTransparency: 0.95 * width,
   swipebleWidth: width,
   swipebleHeight: height,
@@ -160,7 +161,7 @@ class PageComponent extends Component {
         }, {
           rotate: this.state.containerTranslateX.interpolate({
             inputRange: [-dragOffsetForTransparency, 0, dragOffsetForTransparency],
-            outputRange: this.props.currentPageRotate.length === 3 ? this.props.currentPage : ['0deg', '0deg', '0deg']
+            outputRange: this.props.currentPageRotate.length === 3 ? this.props.currentPageRotate : ['0deg', '0deg', '0deg']
           })
         }]
       }
@@ -235,7 +236,7 @@ class PageComponent extends Component {
     return(
       <View style={styles.swipeble}>
         <Animated.View
-          ref={component => this._swipeble = component}
+          //ref={component => this._swipeble = component}
           style={(this.props.page === this.props.currentPage ) ? this.animatedStyle() : this.nextPageAnimatedStyle()}
           {...this.panResponder.panHandlers}>
           {this.props.children}
