@@ -1,0 +1,9 @@
+{
+  "name": "react-native-animated-swiper",
+  "version": "1.0.0",
+  "description": "Animated swiper for RN",
+  "main": "index.js",
+  "repository": "git@github.com:TemaKozyrev/react-native-animated-swiper.git",
+  "author": "TemaKozyrev <tema@tema.ws>",
+  "license": "MIT"
+}
