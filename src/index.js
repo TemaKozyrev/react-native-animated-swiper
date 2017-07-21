@@ -43,6 +43,12 @@ export default class AwesomeProject extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
+    if (JSON.stringify(this.state) == JSON.stringify(nextState)) {
+      return true;
+    }
+    if (!this.state.swipe && nextState.swipe) {
+      return true;
+    }
     if (nextState.currentPage != this.state.currentPage || nextState.swipe) {
       return false;
     }
@@ -53,14 +59,6 @@ export default class AwesomeProject extends Component {
     return (
       <View style={styles.container}>
         <ScrollView
-          onScroll={(event) => {
-            if (event.nativeEvent.contentOffset.x % width == 0) {
-              this.setState({ swipe: false });
-            } else {
-              console.log('swipe end');
-              this.setState({ swipe: true });
-            };
-          }}
           horizontal
           pagingEnabled
           scrollEnabled={false}
@@ -87,13 +85,13 @@ class PageComponent extends Component {
   nextPageAnimatedStyle() {
     return [
       {
-        width: 200,
+        width: 280,
         height: 450
       },
       {
         opacity: this.state.containerTranslateX.interpolate({
-          inputRange: [-dragOffsetForTransparency, 0, dragOffsetForTransparency],
-          outputRange: [1, 0, 1],
+          inputRange: [-width, 0, width],
+          outputRange: [0, 1, 0],
         }),
           transform: [{
           translateX: this.state.containerTranslateX,
@@ -140,6 +138,7 @@ class PageComponent extends Component {
       onPanResponderRelease: (evt, gestureState) => {
         if (this.state.containerTranslateX._value < -100) {
           if (this.props.page < 4) {
+            this.props.changeSwipeState(true);
             Animated.spring(this.state.containerTranslateX, {toValue: -dragOffsetForTransparency, useNativeDriver: true}).start();                      
             this.props.scrollTo(this.props.page + 1, this.props.page);
           } else {
@@ -148,6 +147,7 @@ class PageComponent extends Component {
         };
         if (this.state.containerTranslateX._value > 100) {
           if (this.props.page > 0) {
+            this.props.changeSwipeState(true);
             Animated.spring(this.state.containerTranslateX, {toValue: dragOffsetForTransparency, useNativeDriver: true}).start();            
             this.props.scrollTo(this.props.page - 1, this.props.page);
           } else {
@@ -162,14 +162,20 @@ class PageComponent extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.page === nextProps.currentPage) {
+    if (this.props.page === nextProps.currentPage && nextProps.swipe) {
       if (nextProps.prevPage > this.props.page) {
         this.state.containerTranslateX.setValue(-width);
       } else {
         this.state.containerTranslateX.setValue(width);
       }
-      Animated.spring(this.state.containerTranslateX, {toValue:0, useNativeDriver: true}).start();
+      Animated.timing(this.state.containerTranslateX, {toValue:0, duration: 500, useNativeDriver: true}).start(() => { this.props.changeSwipeState(false); this.state.containerTranslateX.setValue(0); });
     }
+  }
+
+  shouldComponentUpdate(nextProps) {
+    if (nextProps.swipe || Math.abs(this.props.page - nextProps.currentPage) > 1)
+      return false;
+    return true;
   }
 
   updateStyleBasedOnDeltaX(dx) {
